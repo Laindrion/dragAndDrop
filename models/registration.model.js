@@ -1,5 +1,5 @@
 export const defineRegistration = (sequelize, DataTypes) => {
-   sequelize.define("registration", {
+   return sequelize.define("registration", {
       firstName: DataTypes.STRING,
       lastName: DataTypes.STRING,
       address: DataTypes.STRING,

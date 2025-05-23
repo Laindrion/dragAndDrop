@@ -1,8 +1,8 @@
-import express from "express"
+import Router from "express"
 import multer from "multer"
-import { register } from "../controllers/registration.controller.js"
+import { register, getRegistrants } from "../controllers/registration.controller.js"
 
-const router = express.Router();
+const router = Router();
 
 const storage = multer.diskStorage({
    destination: (req, file, cb) => cb(null, "uploads/"),
@@ -10,11 +10,25 @@ const storage = multer.diskStorage({
       cb(null, Date.now() + "_" + file.originalname),
 });
 
-const upload = multer({ storage });
+const upload = multer({
+   storage,
+   limits: {
+      fileSize: 2 * 1024 * 1024, // 2mb size limit
+   },
+   fileFilter: (req, file, cb) => {
+      if (!file.mimetype.startsWith("image/")) {
+         return cb(new Error("Only image files are allowed!", false));
+      }
+      cb(null, true);
+   }
+});
 
 router.post(
-   "/register",
-   upload.fields([{ name: "passportPhoto" }, { name: "profilePhoto" }])
+   "/",
+   upload.fields([{ name: "passportPhoto" }, { name: "profilePhoto" }]),
+   register
 )
+
+router.get("/", getRegistrants);
 
 export default router;
