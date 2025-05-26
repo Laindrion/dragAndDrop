@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/", getPositions);
 router.post("/", addPosition);
-router.post("/:id", updatePosition);
-router.post("/:id", deletePosition);
+router.put("/:id", updatePosition);
+router.delete("/:id", deletePosition);
 
 export default router;

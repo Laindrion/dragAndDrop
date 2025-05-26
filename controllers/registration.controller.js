@@ -1,6 +1,7 @@
 import db from "../models/index.js"
 import fs from "fs";
 import path from "path";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const Registration = db.registration;
 
@@ -62,4 +63,123 @@ export const register = async (req, res) => {
       console.error("Error registering user:", err);
       res.status(500).json({ message: "Server error" });
    }
+}
+
+export const updateRegistrant = async (req, res) => {
+   try {
+      const { id } = req.params;
+      const registrant = await Registration.findByPk(id);
+
+      if (!registrant) {
+         return res.status(404).json({ message: "Registrant not found" });
+      }
+
+      const {
+         firstName, lastName, address,
+         phone, postalCode, email,
+         dob, country, position
+      } = req.body
+
+      const newPassportPhoto = req.files?.passportPhoto?.[0]?.filename;
+      const newProfilePhoto = req.files?.profilePhoto?.[0]?.filename;
+
+      // Delete old passport photo if replaced
+      if (newPassportPhoto || registrant.passportPhoto) {
+         fs.unlink(path.join("uploads", registrant.passportPhoto), err => {
+            if (err) console.error("Error deleting old passport photo", err);
+         });
+      }
+
+      // Delete old profile photo if replaced 
+      if (newProfilePhoto || registrant.profilePhoto) {
+         fs.unlink(path.join("uploads", registrant.passportPhoto), err => {
+            if (err) console.error("Error deleting old passport photo", err);
+         });
+      }
+
+
+      await registrant.update({
+         firstName,
+         lastName,
+         address,
+         phone,
+         postalCode,
+         email,
+         dob,
+         country,
+         position,
+         passportPhoto: newPassportPhoto || registrant.passportPhoto,
+         profilePhoto: newProfilePhoto || registrant.profilePhoto,
+      })
+
+      res.json({ message: "Registrant updated", data: registrant });
+   } catch (err) {
+      res.status(500).json({ message: err.message })
+   }
+}
+
+export const deleteRegistrant = async (req, res) => {
+   try {
+      const { id } = req.params;
+      const registrant = await Registration.findByPk(id);
+      if (!registrant) {
+         res.status(404).json({ message: "Registrant not found" });
+      }
+
+      //Delete uploaded images if exist
+      const filesToDelete = [registrant.passportPhoto, registrant.profilePhoto];
+
+      filesToDelete.forEach((filename) => {
+         if (filename) {
+            const filePath = path.join("uploads", filename);
+            fs.unlink(filePath, (err) => {
+               if (err) console.error(`Error deleting file: ${filename}`, err);
+            })
+         }
+      });
+
+      await registrant.destroy();
+      res.json({ message: "Registrant deleted" });
+   } catch (error) {
+      res.status(500).json({ message: err.message });
+   }
+}
+
+export const approveRegistrant = async (req, res) => {
+   const { id } = req.params;
+   const registrant = await Registration.findByPk(id);
+   if (!registrant) {
+      res.status(404).json({ message: "Registrant not found" });
+   }
+
+   await sendEmail(
+      registrant.email,
+      "Registration Approved",
+      `
+      <p>Dear ${registrant.firstName},</p>
+      <p>We are pleased to inform you that your registration has been approved.</p>
+      `
+   );
+
+   res.json({ message: "Registrant approved", data: registrant });
+}
+
+
+export const declineRegistrant = async (req, res) => {
+   const { id } = req.params;
+   const registrant = await Registration.findByPk(id);
+   if (!registrant) {
+      res.status(404).json({ message: "Registrant not found" });
+   }
+
+   await sendEmail(
+      registrant.email,
+      "Registration Declined",
+      `
+      <p>Dear ${registrant.firstName},</p>
+      <p>We regret to inform you that your registration has been declined.</p>
+      `
+   );
+
+   res.json({ message: "Decline email sent" });
 }
