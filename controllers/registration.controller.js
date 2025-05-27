@@ -24,7 +24,7 @@ export const register = async (req, res) => {
       const {
          firstName, lastName, address,
          phone, postalCode, email,
-         dob, country, position
+         dob, country, position, status,
       } = req.body
 
       const passportPhoto = req.files?.passportPhoto?.[0]?.filename || null;
@@ -38,7 +38,7 @@ export const register = async (req, res) => {
       if (
          !firstName || !lastName || !email || !address ||
          !phone || !postalCode || !email ||
-         !dob || !country || !position
+         !dob || !country || !position || status !== "pending"
       ) {
          throw new Error("You're missing one of the required fields.");
       }
@@ -50,7 +50,7 @@ export const register = async (req, res) => {
          firstName, lastName, address,
          phone, postalCode, email,
          dob, country, position,
-         passportPhoto, profilePhoto
+         passportPhoto, profilePhoto, status: "pending",
       }, { transaction });
 
       await transaction.commit();
