@@ -53,16 +53,22 @@ export const register = async (req, res) => {
          passportPhoto, profilePhoto
       }, { transaction });
 
-      await sendEmail(
-         email,
-         "Registration Confirmation",
-         `
+      await transaction.commit();
+      try {
+         await sendEmail(
+            email,
+            "Registration Confirmation",
+            `
          <p>Dear ${firstName},</p>
          <p>Your registration has been successfully received.</p>
          <p>Please wait for further instructions regarding your application.</p>
          <p>Thank you!</p>
          `
-      );
+         );
+      } catch (err) {
+         console.error("❌ Email failed, but user saved:", err.message);
+      }
+
 
       console.log("📬 Email sent to:", email);
 

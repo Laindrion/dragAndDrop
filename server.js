@@ -6,6 +6,7 @@ import db from "./models/index.js";
 import registrationRoutes from "./routes/registration.routes.js";
 import countryRoutes from "./routes/country.routes.js";
 import positionRoutes from "./routes/position.routes.js";
+import multer from "multer";
 
 dotenv.config();
 
