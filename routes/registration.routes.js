@@ -1,6 +1,6 @@
 import Router from "express"
 import multer from "multer"
-import { register, getRegistrants, updateRegistrant, deleteRegistrant, approveRegistrant, declineRegistrant } from "../controllers/registration.controller.js"
+import { register, getRegistrants, updateRegistrant, deleteRegistrant, approveRegistrant, declineRegistrant } from "../controllers/registration.controller.js";
 
 const router = Router();
 

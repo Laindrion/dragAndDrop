@@ -20,6 +20,22 @@ app.use("/api/register", registrationRoutes);
 app.use("/api/countries", countryRoutes);
 app.use("/api/positions", positionRoutes);
 
+import { sendEmail } from "./utils/sendEmail.js";
+
+app.get("/test-email", async (req, res) => {
+   try {
+      await sendEmail(
+         "igencap@gmail.com",
+         "Test Email from Registration System",
+         "<p>This is a test email. If you see this, your config works!</p>"
+      );
+      res.send("✅ Test email sent");
+   } catch (err) {
+      console.error("❌ Failed to send test email:", err.message);
+      res.status(500).json({ message: "Failed to send test email" });
+   }
+});
+
 app.use((err, req, res, next) => {
    if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: err.message })

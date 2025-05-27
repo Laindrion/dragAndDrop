@@ -6,8 +6,14 @@ import { sendEmail } from "../utils/sendEmail.js";
 const Registration = db.registration;
 
 export const getRegistrants = async (req, res) => {
-   const info = await Registration.findAll();
-   res.json(info)
+   try {
+      const info = await Registration.findAll();
+      console.log("👥 Retrieved registrants:", info.length);
+      res.json(info)
+   } catch (err) {
+      console.error("❌ Failed to fetch registrants:", err.message);
+      res.status(500).json({ message: "Error retrieving registrants" });
+   }
 }
 
 export const register = async (req, res) => {
@@ -37,6 +43,8 @@ export const register = async (req, res) => {
          throw new Error("You're missing one of the required fields.");
       }
 
+      console.log("📝 Creating registration for:", email);
+
       // Save to DB in transacton
       const user = await Registration.create({
          firstName, lastName, address,
@@ -45,7 +53,20 @@ export const register = async (req, res) => {
          passportPhoto, profilePhoto
       }, { transaction });
 
-      await transaction.commit();
+      await sendEmail(
+         email,
+         "Registration Confirmation",
+         `
+         <p>Dear ${firstName},</p>
+         <p>Your registration has been successfully received.</p>
+         <p>Please wait for further instructions regarding your application.</p>
+         <p>Thank you!</p>
+         `
+      );
+
+      console.log("📬 Email sent to:", email);
+
+
       res.status(201).json({ message: "Registered successfully", data: user });
    } catch (err) {
       await transaction.rollback();
@@ -163,7 +184,6 @@ export const approveRegistrant = async (req, res) => {
 
    res.json({ message: "Registrant approved", data: registrant });
 }
-
 
 export const declineRegistrant = async (req, res) => {
    const { id } = req.params;
