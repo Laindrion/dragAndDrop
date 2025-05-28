@@ -179,6 +179,9 @@ export const approveRegistrant = async (req, res) => {
       res.status(404).json({ message: "Registrant not found" });
    }
 
+   registrant.status = "approved";
+   await registrant.save();
+
    await sendEmail(
       registrant.email,
       "Registration Approved",
@@ -197,6 +200,9 @@ export const declineRegistrant = async (req, res) => {
    if (!registrant) {
       res.status(404).json({ message: "Registrant not found" });
    }
+
+   registrant.status = "declined";
+   await registrant.save();
 
    await sendEmail(
       registrant.email,
