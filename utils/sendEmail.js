@@ -1,7 +1,10 @@
 import nodemailer from "nodemailer";
+import Resend from "resend";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const transporter = nodemailer.createTransport({
    service: "gmail",
@@ -14,7 +17,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (to, subject, html) => {
    try {
       const mailOptions = {
-         from: `"Your app name" <${process.env.EMAIL_USER}>`,
+         from: `"Test" <${process.env.EMAIL_USER}>`,
          to,
          subject,
          html

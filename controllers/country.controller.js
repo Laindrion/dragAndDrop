@@ -8,7 +8,14 @@ export const getCountries = async (req, res) => {
 
 export const addCountry = async (req, res) => {
    const { name } = req.body;
+
+   const existing = await Country.findOne({ where: { name } })
+   if (existing) {
+      throw new Error("The country already exists");
+   }
+
    const newCountry = await Country.create({ name });
+
    res.status(201).json(newCountry);
 }
 

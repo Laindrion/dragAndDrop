@@ -24,26 +24,36 @@ export const register = async (req, res) => {
       const {
          firstName, lastName, address,
          phone, postalCode, email,
-         dob, country, position, status,
+         dob, country, position,
       } = req.body
 
       const passportPhoto = req.files?.passportPhoto?.[0]?.filename || null;
       const profilePhoto = req.files?.profilePhoto?.[0]?.filename || null;
 
-      // Track filenames for possible cleanup
-      if (passportPhoto) uploadedFiles.push(passportPhoto);
-      if (profilePhoto) uploadedFiles.push(profilePhoto);
 
       // Validation
       if (
-         !firstName || !lastName || !email || !address ||
-         !phone || !postalCode || !email ||
-         !dob || !country || !position || status !== "pending"
+         !firstName || !lastName || !email ||
+         !address || !phone || !postalCode ||
+         !dob || !country || !position
       ) {
          throw new Error("You're missing one of the required fields.");
       }
 
-      console.log("📝 Creating registration for:", email);
+      // Track filenames for possible cleanup
+      if (passportPhoto) uploadedFiles.push(passportPhoto);
+      if (profilePhoto) uploadedFiles.push(profilePhoto);
+
+      // Validation for image files
+      if (!passportPhoto || !profilePhoto) {
+         throw new Error("Both passport and profile images are required.");
+      }
+
+      // Validation for duplicate emails
+      const existing = await Registration.findOne({ where: { email } });
+      if (existing) {
+         throw new Error("This email is already registered");
+      }
 
       // Save to DB in transacton
       const user = await Registration.create({
@@ -68,11 +78,7 @@ export const register = async (req, res) => {
       } catch (err) {
          console.error("❌ Email failed, but user saved:", err.message);
       }
-
-
       console.log("📬 Email sent to:", email);
-
-
       res.status(201).json({ message: "Registered successfully", data: user });
    } catch (err) {
       await transaction.rollback();
@@ -150,7 +156,7 @@ export const deleteRegistrant = async (req, res) => {
       const { id } = req.params;
       const registrant = await Registration.findByPk(id);
       if (!registrant) {
-         res.status(404).json({ message: "Registrant not found" });
+         return res.status(404).json({ message: "Registrant not found" });
       }
 
       //Delete uploaded images if exist
@@ -176,7 +182,7 @@ export const approveRegistrant = async (req, res) => {
    const { id } = req.params;
    const registrant = await Registration.findByPk(id);
    if (!registrant) {
-      res.status(404).json({ message: "Registrant not found" });
+      return res.status(404).json({ message: "Registrant not found" });
    }
 
    registrant.status = "approved";
@@ -191,7 +197,7 @@ export const approveRegistrant = async (req, res) => {
       `
    );
 
-   res.json({ message: "Registrant approved", data: registrant });
+   res.json({ message: "Approve email sent" });
 }
 
 export const declineRegistrant = async (req, res) => {

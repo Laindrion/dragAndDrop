@@ -12,7 +12,7 @@ export const defineRegistration = (sequelize, DataTypes) => {
       passportPhoto: DataTypes.STRING,
       status: {
          type: DataTypes.STRING,
-         defaultValue: "pending" // Default status
+         defaultValue: "pending", // Default status
       }
    })
 }

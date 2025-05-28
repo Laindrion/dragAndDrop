@@ -8,6 +8,7 @@
       "mysql": "^2.18.1",
       "nodemailer": "^7.0.3",
       "nodemon": "^3.1.10",
+      "resend": "^4.5.1",
       "sequelize": "^6.37.7"
    },
    "name": "backend",
