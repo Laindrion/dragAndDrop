@@ -78,6 +78,7 @@ export const register = async (req, res) => {
       } catch (err) {
          console.error("❌ Email failed, but user saved:", err.message);
       }
+
       console.log("📬 Email sent to:", email);
       res.status(201).json({ message: "Registered successfully", data: user });
    } catch (err) {
@@ -129,7 +130,6 @@ export const updateRegistrant = async (req, res) => {
             if (err) console.error("Error deleting old passport photo", err);
          });
       }
-
 
       await registrant.update({
          firstName,
@@ -220,4 +220,19 @@ export const declineRegistrant = async (req, res) => {
    );
 
    res.json({ message: "Decline email sent" });
+}
+
+
+export const getRegistrantById = async (req, res) => {
+   try {
+      const { id } = req.params;
+      const user = await Registration.findByPk(id);
+
+      if (!user) return res.status(404).json({ message: "Registrant not found" });
+
+      res.json(user);
+   } catch (error) {
+      console.log("Error fetching registrant:", error);
+      res.status(500).json({ message: "Server error" });
+   }
 }

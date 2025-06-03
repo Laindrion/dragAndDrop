@@ -1,6 +1,6 @@
 import Router from "express"
 import multer from "multer"
-import { register, getRegistrants, updateRegistrant, deleteRegistrant, approveRegistrant, declineRegistrant } from "../controllers/registration.controller.js";
+import { register, getRegistrants, updateRegistrant, deleteRegistrant, approveRegistrant, declineRegistrant, getRegistrantById } from "../controllers/registration.controller.js";
 
 const router = Router();
 
@@ -24,6 +24,7 @@ const upload = multer({
 });
 
 router.get("/", getRegistrants);
+router.get("/:id", getRegistrantById);
 router.post(
    "/",
    upload.fields([{ name: "passportPhoto" }, { name: "profilePhoto" }]),

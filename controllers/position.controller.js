@@ -8,7 +8,7 @@ export const getPositions = async (req, res) => {
 
 export const addPosition = async (req, res) => {
    const { name } = req.body;
-   
+
    const existing = await Position.findOne({ where: { name } })
    if (existing) {
       throw new Error("The position already exists");
