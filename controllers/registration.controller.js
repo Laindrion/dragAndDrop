@@ -23,22 +23,26 @@ export const register = async (req, res) => {
    try {
       const {
          firstName, lastName, address,
-         phone, postalCode, email,
-         dob, country, position,
+         phone, email, dob, 
+         country, position,
       } = req.body
 
-      const passportPhoto = req.files?.passportPhoto?.[0]?.filename || null;
-      const profilePhoto = req.files?.profilePhoto?.[0]?.filename || null;
-
+      /* console.log("DEBUG:", {
+         firstName, lastName, email,
+         address, phone,
+         dob, country, position
+      }); */
 
       // Validation
       if (
-         !firstName || !lastName || !email ||
-         !address || !phone || !postalCode ||
+         !firstName || !lastName || 
+         !email || !address || !phone ||
          !dob || !country || !position
       ) {
          throw new Error("You're missing one of the required fields.");
       }
+      const passportPhoto = req.files?.passportPhoto?.[0]?.filename || null;
+      const profilePhoto = req.files?.profilePhoto?.[0]?.filename || null;
 
       // Track filenames for possible cleanup
       if (passportPhoto) uploadedFiles.push(passportPhoto);
@@ -58,7 +62,7 @@ export const register = async (req, res) => {
       // Save to DB in transacton
       const user = await Registration.create({
          firstName, lastName, address,
-         phone, postalCode, email,
+         phone, email,
          dob, country, position,
          passportPhoto, profilePhoto, status: "pending",
       }, { transaction });
@@ -110,7 +114,7 @@ export const updateRegistrant = async (req, res) => {
 
       const {
          firstName, lastName, address,
-         phone, postalCode, email,
+         phone, email,
          dob, country, position
       } = req.body
 
@@ -136,7 +140,6 @@ export const updateRegistrant = async (req, res) => {
          lastName,
          address,
          phone,
-         postalCode,
          email,
          dob,
          country,
