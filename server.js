@@ -6,6 +6,7 @@ import db from "./models/index.js";
 import registrationRoutes from "./routes/registration.routes.js";
 import countryRoutes from "./routes/country.routes.js";
 import positionRoutes from "./routes/position.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import multer from "multer";
 
 dotenv.config();
@@ -20,6 +21,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/register", registrationRoutes);
 app.use("/api/countries", countryRoutes);
 app.use("/api/positions", positionRoutes);
+app.use("/api/admin", adminRoutes);
 
 import { sendEmail } from "./utils/sendEmail.js";
 
@@ -51,3 +53,4 @@ db.sequelize.sync().then(() => {
    console.log("Database synced");
    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
+
