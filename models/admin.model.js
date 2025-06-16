@@ -18,6 +18,6 @@ export const defineAdmin = (sequelize, DataTypes) => {
       },
    },
       {
-         timestamps: false, // ⛔ disables createdAt/updatedAt
+         timestamps: false, // disables createdAt/updatedAt
       });
 };
