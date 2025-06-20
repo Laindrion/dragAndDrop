@@ -8,6 +8,7 @@ import countryRoutes from "./routes/country.routes.js";
 import positionRoutes from "./routes/position.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import multer from "multer";
+import landingRoutes from "./routes/landing.routes.js";
 
 dotenv.config();
 
@@ -49,8 +50,10 @@ app.use((err, req, res, next) => {
    next();
 });
 
+
+app.use("/api", landingRoutes);
+
 db.sequelize.sync().then(() => {
    console.log("Database synced");
    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
-

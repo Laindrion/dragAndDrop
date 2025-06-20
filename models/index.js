@@ -4,6 +4,10 @@ import { defineRegistration } from "./registration.model.js";
 import { defineCountry } from "./country.model.js";
 import { definePosition } from "./position.model.js";
 import { defineAdmin } from "./admin.model.js";
+import LandingPage from "./landing.model.js";
+
+
+
 
 const sequelize = new Sequelize(
    dbConfig.DB,
@@ -24,5 +28,8 @@ db.registration = defineRegistration(sequelize, DataTypes);
 db.country = defineCountry(sequelize, DataTypes);
 db.position = definePosition(sequelize, DataTypes);
 db.Admin = defineAdmin(sequelize, DataTypes);
+db.LandingPage = LandingPage(sequelize, Sequelize.DataTypes);
+
+if (db.LandingPage.associate) db.LandingPage.associate(db);
 
 export default db;
